@@ -13,6 +13,7 @@ import { io, Socket } from "socket.io-client";
 interface iSocketConext {
   onlineUsers: SocketUser[] | null;
   handlCall: (user: SocketUser) => void;
+  ongoingCall: OngoingCall | null
 }
 
 export const SocketContext = createContext<iSocketConext | null>(null);
@@ -103,10 +104,14 @@ export const SocketContextProvider = ({
   useEffect(() => {
     if (!socket || !isSocketConnected) return;
     socket.on("incomingCall", onIncomingCall);
+
+    return () => {
+      socket.off("incomingCall", onIncomingCall);
+    };
   }, [socket, isSocketConnected, user, onIncomingCall]);
 
   return (
-    <SocketContext.Provider value={{ onlineUsers, handlCall }}>
+    <SocketContext.Provider value={{ onlineUsers, handlCall, ongoingCall }}>
       {children}
     </SocketContext.Provider>
   );
