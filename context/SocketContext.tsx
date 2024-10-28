@@ -1,4 +1,4 @@
-import { OngoingCall, SocketUser } from "@/types";
+import { OngoingCall, Partcipants, SocketUser } from "@/types";
 import { useUser } from "@clerk/nextjs";
 import { initialize } from "next/dist/server/lib/render-server";
 import {
@@ -45,6 +45,16 @@ export const SocketContextProvider = ({
     [socket, currentSocketUser, ongoingCall]
   );
 
+  const onIncomingCall = useCallback(
+    (partcipants: Partcipants) => {
+      setOngoingCall({
+        partcipants,
+        isRinging: true,
+      });
+    },
+    [socket, user, ongoingCall]
+  );
+
   //   initialize socket
   useEffect(() => {
     const newSocket = io;
@@ -88,6 +98,12 @@ export const SocketContextProvider = ({
       });
     };
   }, [socket, isSocketConnected, user]);
+
+  //calls
+  useEffect(() => {
+    if (!socket || !isSocketConnected) return;
+    socket.on("incomingCall", onIncomingCall);
+  }, [socket, isSocketConnected, user, onIncomingCall]);
 
   return (
     <SocketContext.Provider value={{ onlineUsers, handlCall }}>
