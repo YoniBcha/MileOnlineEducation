@@ -1,3 +1,4 @@
+import CallNotification from "@/components/CallNotification";
 import ListOnlineUsers from "@/components/ListOnlineUsers";
 
 export default function Home() {
@@ -5,6 +6,7 @@ export default function Home() {
     <main className="">
       <section className="">
         <ListOnlineUsers />
+        <CallNotification />
       </section>
     </main>
   );
